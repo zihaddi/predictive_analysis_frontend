@@ -1,4 +1,6 @@
 <script lang="ts">
+	import UsersTable from '#lib/components/Users/UsersTable.svelte';
+	import { auth } from '#lib/stores/auth.ts';
 	// Placeholder data. Replace with real values loaded in +page.server.ts.
 	const stats = [
 		{ label: 'Total Records', value: '1,248' },
@@ -27,3 +29,7 @@
 	<h2 class="text-base font-semibold text-heading">Recent activity</h2>
 	<p class="mt-2 text-sm text-ink-muted">Nothing here yet.</p>
 </div>
+
+{#if auth.user?.role === 'ADMIN'}
+	<UsersTable />
+{/if}

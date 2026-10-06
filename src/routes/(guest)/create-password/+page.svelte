@@ -74,7 +74,11 @@
 			/>
 		</div>
 
-		{#if showErrors && mismatch}
+		{#if form?.serverError}
+			<AuthMessage title={m.error_password_rejected()} class="mt-2">
+				{form.serverError}
+			</AuthMessage>
+		{:else if showErrors && mismatch}
 			<AuthMessage id="password-mismatch" title={m.error_passwords_mismatch_title()} class="mt-2">
 				{m.error_passwords_mismatch_description()}
 			</AuthMessage>

@@ -80,6 +80,7 @@ prefer this guide and the official docs over older blog posts / StackOverflow an
 48. [Gotchas](#48-gotchas)
 49. [Glossary](#49-glossary)
 50. [i18n and dark mode](#50-i18n-and-dark-mode)
+51. [Backend API layer](#51-backend-api-layer)
 
 ---
 
@@ -1964,6 +1965,8 @@ environments.
 
 ## 44. Connecting the real backend
 
+> **Superseded by [§51 Backend API layer](#51-backend-api-layer)** — the backend is connected now. The text below is the original generic recipe.
+
 The template ships with a demo login. Replacing it touches three places:
 
 ### 1. Login action — exchange credentials for a token
@@ -2261,3 +2264,105 @@ add its label to `LanguageToggle.svelte`, and (for non-Latin scripts) a `@fontso
 
 Default is light (the Figma design). To follow the OS setting for first-time visitors, read `prefers-color-scheme`
 in an inline script in `app.html` only when no `theme` cookie exists.
+
+## 51. Backend API layer
+
+The app talks to a REST backend (`API_BASE_URL` + `API_PREFIX`, default `/api/v1`, configured in `.env`). Endpoints and shapes
+come from the Postman collection `Predictive Analytics API`.
+
+### The picture
+
+```
+Component / load / action
+   │  adminApi.listUsers({ page })            ← lib/api/*.ts   typed endpoint functions
+   ▼
+fetchApi('/admin/users', { query, fetch })    ← lib/utils/fetchApi.ts   throws ApiError
+   │  GET /api/proxy/admin/users?page=1       (same origin; cookies ride along)
+   ▼
+routes/api/proxy/[...path]/+server.ts         ← attaches Authorization: Bearer <access_token from httpOnly cookie>
+   │                                             refreshes the session on expiry / 401, retries once
+   ▼
+lib/server/backend.ts  →  http://192.168.1.56:3000/api/v1/admin/users
+```
+
+Why a proxy instead of calling the backend from the browser: the tokens live in **httpOnly cookies** so JavaScript (and any
+XSS) can never read them, there is no CORS configuration, and token refresh is handled in exactly one place.
+The cost is one extra hop; the backend stays the only source of truth for data and authorization.
+
+### Files
+
+| File                                      | Role                                                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `src/env.ts`                              | `API_BASE_URL`, `API_PREFIX` — server-only (`$app/env/private`). Edit `.env` to change the backend host |
+| `lib/types/api.ts`                        | `ApiEnvelope<T>`, `Paginated<T>`, `FieldErrors`                                                         |
+| `lib/utils/apiError.ts`                   | `ApiError` (status, errors), `describeError()`, `fieldError()`                                          |
+| `lib/utils/fetchApi.ts`                   | universal call helper (browser + SSR) → always `/api/proxy/*`                                           |
+| `lib/utils/useRequest.svelte.ts`          | `isLoading / data / error / execute` — the Nuxt `loadData` pattern as a rune helper                     |
+| `lib/api/auth.ts`, `users.ts`, `admin.ts` | typed endpoint functions, one object per resource                                                       |
+| `lib/server/backend.ts`                   | raw backend client (`backendRequest`, `backendJson`) — only server code uses it                         |
+| `lib/server/session.ts`                   | cookie names/lifetimes, `refreshSession` (deduplicated), `authorizedRequest`                            |
+| `lib/server/auth.ts`                      | `login`, `logout`, `loadUser` (token-handling endpoints)                                                |
+| `routes/api/proxy/[...path]/+server.ts`   | the gateway; blocks `auth/login                                                                         | register | refresh | logout` |
+| `hooks.server.ts`                         | `loadUser(event)` → `locals.user`, route guard                                                          |
+
+### Session lifecycle
+
+1. **Login** (`login/+page.server.ts` → `lib/server/auth.ts`): `POST /auth/login` → `access_token` cookie (lifetime = JWT `exp`,
+   1 h), `refresh_token` cookie (7–30 d when "Remember me", session cookie otherwise), `auth_remember` marker.
+2. **Every page request**: `hooks.server.ts` → `GET /auth/me`. No access cookie but a refresh cookie? It refreshes first.
+3. **Refresh rotation**: the backend revokes a refresh token the moment it is used. If six requests find an expired access
+   cookie at once, they would all rotate and five would fail. `refreshSession` therefore shares one in-flight refresh per token
+   (and keeps its result for 10 s), so all six succeed and get the same new cookies.
+4. **Logout** (`POST /api/auth/logout`): `POST /auth/logout` revokes the refresh token, cookies are cleared. Access tokens are
+   stateless and stay valid on the backend until `exp` — only the cookie is removed.
+5. If refresh fails, the cookies are cleared and the user lands on `/login` (server redirect, or `fetchApi` in the browser).
+
+### Using it
+
+```svelte
+<script lang="ts">
+	import { adminApi } from '#lib/api/admin.ts';
+	import { describeError } from '#lib/utils/apiError.ts';
+	import { useRequest } from '#lib/utils/useRequest.svelte.ts';
+
+	const users = useRequest((page: number) => adminApi.listUsers({ page, pageSize: 10 }));
+	let page = $state(1);
+	$effect(() => {
+		void users.execute(page);
+	}); // re-runs when `page` changes; stale responses are ignored
+</script>
+
+{#if users.error}{describeError(users.error)}
+{:else if users.data === null}Loading…
+{:else}{#each users.data.items as u (u.id)}{u.name}{/each}{/if}
+```
+
+Server side (`+page.server.ts`): `await adminApi.listUsers({}, { fetch })` — **pass the event's `fetch`**, otherwise the relative
+proxy URL cannot resolve and the user's cookies are not forwarded.
+
+Errors: `ApiError.status` — `0`/`502` network, `401` signed out, `403` forbidden, `422` validation (`err.errors.email[0]`),
+`400` business rule (e.g. "invalid or expired password reset token"). Map statuses to UX in the caller; use `describeError()`
+for the generic case.
+
+### Adding an endpoint
+
+1. Add the response type to `lib/types/…`.
+2. Add a function to `lib/api/<resource>.ts` (create the file for a new resource) using `fetchApi`.
+3. Call it with `useRequest` (interactive UI) or with `{ fetch }` in `load` / actions.
+4. If the endpoint returns tokens or sets a session, it is **server-only**: put it in `lib/server/auth.ts` and add its path to the
+   proxy's `SERVER_ONLY` set.
+
+### Endpoint status
+
+| Backend endpoint                                     | Used by                                                                             |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `POST /auth/login`                                   | login action (server-only)                                                          |
+| `GET /auth/me`                                       | `hooks.server.ts` (`loadUser`), `authApi.me`                                        |
+| `POST /auth/refresh`                                 | `refreshSession` (server-only)                                                      |
+| `POST /auth/logout`                                  | `/api/auth/logout` (server-only)                                                    |
+| `POST /auth/forgot-password`                         | forgot-password + check-email (resend) actions                                      |
+| `POST /auth/reset-password`                          | create-password action                                                              |
+| `GET /admin/users`                                   | dashboard `UsersTable` (admin only)                                                 |
+| `POST /auth/change-password`, `PATCH /users/profile` | `authApi.changePassword`, `usersApi.updateProfile` — typed and ready, no screen yet |
+| `POST /auth/register`                                | not wired (no sign-up screen in the designs)                                        |
+| `GET /health`                                        | not wired — lives outside `/api/v1`, so the proxy can't reach it                    |
