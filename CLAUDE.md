@@ -28,7 +28,6 @@ src/
 ├── env.ts                   defineEnvVars() — API_BASE_URL, API_PREFIX (both server-only)
 ├── (messages/*.json)        i18n strings live OUTSIDE src: ../messages/en.json, fr.json, es.json (Paraglide)
 ├── lib/config.ts            App constants (SUPPORT_EMAIL — change the support address here)
-├── lib/config.ts            App constants (SUPPORT_EMAIL — change the support address here)
 ├── hooks.server.ts          Auth guard — runs on every request (Nuxt "middleware")
 ├── lib/                     Importable via `#lib/*`
 │   ├── assets/              Assets imported by components (icons/, login/)
@@ -86,6 +85,7 @@ static/                      Served as-is at site root
 - **Imports**: use the `#lib/...` alias, never relative `../../lib`. Always include the file extension for `.ts` files (`#lib/types/auth.ts`, `#lib/stores/auth.svelte.ts`) — `#lib` is a package.json `imports` map, so extensionless paths do not resolve.
 - **Hook types** live in `@sveltejs/kit/hooks` (`import type { Handle } from '@sveltejs/kit/hooks'`), not `@sveltejs/kit`.
 - Run `pnpm check` and `pnpm lint` before committing.
+- **Commits**: one finished feature = one commit, made after `pnpm check`, `pnpm lint` and `pnpm build` pass. Conventional messages (`feat:`, `fix:`, `docs:`). **Commit messages and PR descriptions must not mention Claude or AI and must not carry a `Co-Authored-By` / "Generated with" line** — authorship is the developer's alone. Never commit `.env`; don't push unless asked.
 
 ## Auth model
 
