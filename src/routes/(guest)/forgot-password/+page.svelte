@@ -6,6 +6,7 @@
 	import AuthLayout from '#lib/components/Auth/AuthLayout.svelte';
 	import AuthLink from '#lib/components/Auth/AuthLink.svelte';
 	import AuthMessage from '#lib/components/Auth/AuthMessage.svelte';
+	import SupportContact from '#lib/components/Auth/SupportContact.svelte';
 	import PrimaryButton from '#lib/components/Button/PrimaryButton.svelte';
 	import TextInput from '#lib/components/Input/TextInput.svelte';
 	import { m } from '#lib/paraglide/messages.js';
@@ -62,4 +63,6 @@
 			</div>
 		</div>
 	</form>
+
+	<SupportContact class="pt-8" />
 </AuthLayout>

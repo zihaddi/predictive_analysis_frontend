@@ -2,6 +2,7 @@
 	import AuthHeader from '#lib/components/Auth/AuthHeader.svelte';
 	import AuthLayout from '#lib/components/Auth/AuthLayout.svelte';
 	import LoginForm from '#lib/components/Auth/LoginForm.svelte';
+	import SupportContact from '#lib/components/Auth/SupportContact.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
 
@@ -19,10 +20,5 @@
 
 	<LoginForm error={form?.error} />
 
-	<p class="pt-8 text-center text-xs leading-4 text-ink-faint">
-		{m.having_trouble()}
-		<a href="mailto:support@impulselogic.com" class="text-link hover:underline"
-			>support@impulselogic.com</a
-		>
-	</p>
+	<SupportContact class="pt-8" />
 </AuthLayout>

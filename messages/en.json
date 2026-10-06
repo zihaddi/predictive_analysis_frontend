@@ -89,5 +89,7 @@
 	"users_status_inactive": "Inactive",
 	"pagination_previous": "Previous",
 	"pagination_next": "Next",
-	"pagination_summary": "Page {page} of {pages} · {total} total"
+	"pagination_summary": "Page {page} of {pages} · {total} total",
+	"support_subject": "LightTouch Analytics – support request",
+	"support_body": "Hello support team,\n\nI need help with LightTouch Analytics.\n\n"
 }

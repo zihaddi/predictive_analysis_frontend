@@ -27,12 +27,14 @@ src/
 ├── app.html                 HTML shell
 ├── env.ts                   defineEnvVars() — API_BASE_URL, API_PREFIX (both server-only)
 ├── (messages/*.json)        i18n strings live OUTSIDE src: ../messages/en.json, bn.json (Paraglide)
+├── lib/config.ts            App constants (SUPPORT_EMAIL — change the support address here)
+├── lib/config.ts            App constants (SUPPORT_EMAIL — change the support address here)
 ├── hooks.server.ts          Auth guard — runs on every request (Nuxt "middleware")
 ├── lib/                     Importable via `#lib/*`
 │   ├── assets/              Assets imported by components (icons/, login/)
 │   ├── components/          UI components — folder = feature namespace
 │   │   ├── Auth/            AuthLayout (shell for ALL auth screens), AuthHero, AuthHeader, AuthLink, AuthMessage,
-│   │   │                    AuthSuccess, PasswordInput, PasswordRequirements, LoginForm
+│   │   │                    AuthSuccess, SupportContact, PasswordInput, PasswordRequirements, LoginForm
 │   │   ├── Button/          PrimaryButton (brand gradient; `href` → <a>, `trailingIcon`)
 │   │   ├── Input/           TextInput (leading icon, invalid/error state, trailing slot), Checkbox
 │   │   ├── Sidebar/         Sidebar (nav items live here)

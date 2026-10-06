@@ -3,6 +3,7 @@
 	import AuthHeader from '#lib/components/Auth/AuthHeader.svelte';
 	import AuthLayout from '#lib/components/Auth/AuthLayout.svelte';
 	import AuthLink from '#lib/components/Auth/AuthLink.svelte';
+	import SupportContact from '#lib/components/Auth/SupportContact.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
 
@@ -37,4 +38,6 @@
 	<div class="flex flex-col items-center pt-8">
 		<AuthLink href="/login" tone="muted">{m.back_to_sign_in()}</AuthLink>
 	</div>
+
+	<SupportContact class="pt-8" />
 </AuthLayout>

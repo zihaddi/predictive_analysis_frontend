@@ -89,5 +89,7 @@
 	"users_status_inactive": "নিষ্ক্রিয়",
 	"pagination_previous": "আগের",
 	"pagination_next": "পরের",
-	"pagination_summary": "পৃষ্ঠা {page} / {pages} · মোট {total}"
+	"pagination_summary": "পৃষ্ঠা {page} / {pages} · মোট {total}",
+	"support_subject": "LightTouch Analytics – সহায়তার অনুরোধ",
+	"support_body": "সহায়তা দলের প্রতি,\n\nLightTouch Analytics ব্যবহারে আমার সাহায্য দরকার।\n\n"
 }
