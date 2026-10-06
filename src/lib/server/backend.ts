@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_PREFIX } from '$app/env/private';
+import { logBackendCall } from '#lib/server/devLog.ts';
 import type { ApiEnvelope } from '#lib/types/api.ts';
 import { ApiError } from '#lib/utils/apiError.ts';
 
@@ -25,8 +26,10 @@ export async function backendRequest(
 	const url = `${API_BASE_URL}${API_PREFIX}${path}${search ? `?${search}` : ''}`;
 	const hasBody = body !== undefined;
 
+	const startedAt = performance.now();
+
 	try {
-		return await fetch(url, {
+		const response = await fetch(url, {
 			method,
 			headers: {
 				Accept: 'application/json',
@@ -37,7 +40,10 @@ export async function backendRequest(
 			body: !hasBody ? undefined : typeof body === 'string' ? body : JSON.stringify(body),
 			signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
 		});
-	} catch {
+		logBackendCall({ method, url, requestBody: body, response, startedAt });
+		return response;
+	} catch (error) {
+		logBackendCall({ method, url, requestBody: body, error, startedAt });
 		throw new ApiError('Backend unreachable', 0);
 	}
 }

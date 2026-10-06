@@ -127,6 +127,7 @@ export const load = async ({ fetch }) => ({ users: await adminApi.listUsers({}, 
 - `describeError(err)` → localized user message; `fieldError(err, 'email')` → one 422 field message.
 - New endpoint = one function in `lib/api/<resource>.ts` (+ types in `lib/types/`). Never call the backend with raw `fetch` from components. Do not name anything `$fetch…` (Svelte reserves `$` prefixes).
 - Only the proxy and `lib/server/*` talk to the backend (`API_BASE_URL` + `API_PREFIX`, server-only env). To change the backend host edit `.env` (`API_BASE_URL="http://192.168.1.56:3000"`) — nothing else.
+- **Debugging**: server-side backend calls (login, actions, `load`, the proxy) are invisible in the browser's Network tab. In dev every backend call is printed in the `pnpm dev` terminal by `lib/server/devLog.ts` (`[api] POST /api/v1/auth/login → 200 370ms` + request/response body; passwords and tokens are redacted; off in production). Browser→`/api/proxy/*` calls (e.g. `useRequest`) do show the real backend JSON in the Network tab.
 - Endpoints outside the API prefix (e.g. `GET /health`) are not reachable through the proxy; call them from `lib/server/` if ever needed.
 
 ## Adding a new business module

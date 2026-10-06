@@ -2344,6 +2344,18 @@ Errors: `ApiError.status` — `0`/`502` network, `401` signed out, `403` forbidd
 `400` business rule (e.g. "invalid or expired password reset token"). Map statuses to UX in the caller; use `describeError()`
 for the generic case.
 
+### Seeing what the backend answered
+
+Backend calls made on the server (login, `forgot-password`, `reset-password`, `load`, the proxy itself) never reach the browser, so the Network tab only shows SvelteKit's own response (`303`, or `{"type":"failure"…}` for actions). In development `lib/server/devLog.ts` prints each backend call to the dev-server terminal:
+
+```
+[api] POST /api/v1/auth/login → 401 370ms
+      ⇢ {"email":"admin@admin.com","password":"***"}
+      ⇠ {"success":false,"message":"Invalid email or password"}
+```
+
+`password`, `current_password`, `new_password`, `token`, `access_token`, `refresh_token` are always replaced by `***`, bodies are cut at 600 characters, and nothing is logged in production. Calls made from the browser through `/api/proxy/*` (e.g. `useRequest`) appear in the Network tab with the real backend JSON.
+
 ### Adding an endpoint
 
 1. Add the response type to `lib/types/…`.
