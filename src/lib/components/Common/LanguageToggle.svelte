@@ -4,7 +4,11 @@
 	import chevronIcon from '#lib/assets/icons/chevron-down.svg';
 	import globeIcon from '#lib/assets/icons/globe.svg';
 
-	const labels: Record<(typeof locales)[number], string> = { en: 'English', bn: 'বাংলা' };
+	const labels: Record<(typeof locales)[number], string> = {
+		en: 'English',
+		fr: 'Français',
+		es: 'Español'
+	};
 	const current = getLocale();
 
 	let open = $state(false);

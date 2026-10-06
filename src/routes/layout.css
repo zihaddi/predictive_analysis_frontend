@@ -1,14 +1,12 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/roboto';
-@import '@fontsource-variable/noto-sans-bengali';
 @plugin '@tailwindcss/forms';
 
 /* Class-based dark mode: <html class="dark"> is set on the server from the `theme` cookie. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-	--font-sans:
-		'Roboto Variable', 'Noto Sans Bengali Variable', ui-sans-serif, system-ui, sans-serif;
+	--font-sans: 'Roboto Variable', ui-sans-serif, system-ui, sans-serif;
 
 	/* Brand (same in both themes) */
 	--color-brand-navy: #0f1150;

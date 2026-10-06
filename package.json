@@ -41,7 +41,6 @@
 		"#lib/*": "./src/lib/*"
 	},
 	"dependencies": {
-		"@fontsource-variable/noto-sans-bengali": "^5.3.0",
 		"@fontsource-variable/roboto": "^5.3.0"
 	}
 }

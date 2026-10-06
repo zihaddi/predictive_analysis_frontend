@@ -2221,11 +2221,11 @@ unit-tested without HTTP.
 
 ### Language — Paraglide JS (official `sv add paraglide`)
 
-Added with `pnpm dlx sv add paraglide="languageTags:en,bn+demo:no"`. What it set up:
+Added with `pnpm dlx sv add paraglide="languageTags:en,fr,es+demo:no"`. What it set up:
 
 | File                                                          | Role                                                                               |
 | ------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `messages/en.json`, `messages/bn.json`                        | one flat JSON per locale, same keys. `en` is the base locale                       |
+| `messages/en.json`, `messages/fr.json`, `messages/es.json`    | one flat JSON per locale, same keys. `en` is the base locale                       |
 | `project.inlang/settings.json`                                | locales + message file pattern                                                     |
 | `vite.config.ts` → `paraglideVitePlugin({ strategy: [...] })` | compiles messages to `src/lib/paraglide/` (git-ignored) on dev/build               |
 | `src/hooks.server.ts` → `handleParaglide`                     | `paraglideMiddleware` + fills `%paraglide.lang%` / `%paraglide.dir%` in `app.html` |
@@ -2243,10 +2243,10 @@ Messages are typed functions (a typo is a compile error) and unused ones are tre
 
 **Strategy = cookie.** `['cookie', 'preferredLanguage', 'baseLocale']`: the locale is stored in the `PARAGLIDE_LOCALE`
 cookie, falls back to the browser language, then `en`. We deliberately do **not** use the default URL strategy
-(`/bn/dashboard`): `hooks.server.ts` guards by `event.url.pathname.startsWith('/dashboard')`, so a locale prefix would
+(`/fr/dashboard`): `hooks.server.ts` guards by `event.url.pathname.startsWith('/dashboard')`, so a locale prefix would
 bypass the auth guard. If you ever switch to URL strategy, de-localize the pathname (`deLocalizeUrl`) before the guard check.
 
-Switching language: `LanguageToggle.svelte` calls `setLocale('bn')` (writes the cookie and reloads so server-rendered text updates).
+Switching language: `LanguageToggle.svelte` calls `setLocale('fr')` (writes the cookie and reloads so server-rendered text updates).
 Adding a language: add the tag to `project.inlang/settings.json`, create `messages/<tag>.json` with every key,
 add its label to `LanguageToggle.svelte`, and (for non-Latin scripts) a `@fontsource-variable/*` font in `layout.css`.
 
