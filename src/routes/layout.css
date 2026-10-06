@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/roboto';
+@import '@fontsource-variable/noto-sans-bengali';
+@plugin '@tailwindcss/forms';
+
+/* Class-based dark mode: <html class="dark"> is set on the server from the `theme` cookie. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--font-sans:
+		'Roboto Variable', 'Noto Sans Bengali Variable', ui-sans-serif, system-ui, sans-serif;
+
+	/* Brand (same in both themes) */
+	--color-brand-navy: #0f1150;
+	--color-brand-blue: #0364bc;
+	--color-brand-cyan: #00bff0;
+	--color-hero: #000e41;
+	--color-checkbox: #0075ff;
+
+	/* Semantic surface + text tokens. Light values come from the Figma design;
+	   dark values are overridden under `.dark` below. */
+	--color-surface: #ffffff;
+	--color-heading: #0f1150;
+	--color-link: #0364bc;
+	--color-field: #f8fafc;
+	--color-field-border: #d0d8e8;
+	--color-ink-label: #4a5568;
+	--color-ink-muted: #8a96a8;
+	--color-ink-faint: #b0b8c8;
+	--color-checkbox-border: #767676;
+	--color-toggle-border: #e5e7eb;
+	--color-toggle-text: #374151;
+
+	/* Feedback + auth-flow surfaces */
+	--color-danger: #dc2626;
+	--color-danger-ink: #991b1b;
+	--color-danger-bg: #fef2f2;
+	--color-danger-border: #ef4444;
+	--color-banner-bg: #fff1f2;
+	--color-banner-border: #fecdd3;
+	--color-success: #10b981;
+	--color-success-bg: #ecfdf5;
+	--color-badge-bg: #eef2f6;
+	--color-card-border: #e2e8f0;
+	--color-ink-slate: #64748b;
+}
+
+.dark {
+	--color-surface: #0b1220;
+	--color-heading: #f1f5f9;
+	--color-link: #38bdf8;
+	--color-field: #111a2e;
+	--color-field-border: #26324a;
+	--color-ink-label: #cbd5e1;
+	--color-ink-muted: #94a3b8;
+	--color-ink-faint: #64748b;
+	--color-checkbox-border: #64748b;
+	--color-toggle-border: #26324a;
+	--color-toggle-text: #e2e8f0;
+	--color-danger: #f87171;
+	--color-danger-ink: #fca5a5;
+	--color-danger-bg: #2a1215;
+	--color-danger-border: #ef4444;
+	--color-banner-bg: #2d1519;
+	--color-banner-border: #5b2430;
+	--color-success-bg: #0f2a22;
+	--color-badge-bg: #1e293b;
+	--color-card-border: #26324a;
+	--color-ink-slate: #94a3b8;
+	color-scheme: dark;
+}
